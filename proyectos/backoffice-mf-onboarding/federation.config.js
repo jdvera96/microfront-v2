@@ -9,6 +9,9 @@ module.exports = withNativeFederation({
     // Importar este módulo ejecuta `bootstrap.ts` (con guard por selector).
     './Bootstrap': './src/bootstrap.ts',
 
+    // API estable para montar/desmontar el MF dentro del Shell (evita pantallas en blanco al volver).
+    './Mount': './src/mount.ts',
+
     // Mantener expuesto el componente para escenarios alternativos
     './Component': './src/remote-entry.ts',
   },

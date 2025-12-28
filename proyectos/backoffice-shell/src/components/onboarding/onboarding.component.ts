@@ -1,12 +1,9 @@
-import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, signal } from '@angular/core';
 import { loadRemoteModule } from '@angular-architects/native-federation';
 
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  // El elemento <app-onboarding-mfe> lo agrega/usa el remoto en runtime.
-  // En build-time Angular no lo conoce, así que lo declaramos como custom element.
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <div class="flex flex-col h-full w-full bg-white">
       <!-- Header for the MF context -->
@@ -34,21 +31,41 @@ import { loadRemoteModule } from '@angular-architects/native-federation';
           </div>
         }
         
-        <!-- IMPORTANTE: el remoto bootstrapea dentro de este selector -->
-        <app-onboarding-mfe class="block w-full h-full"></app-onboarding-mfe>
+        <!-- Host DOM donde montamos el microfrontend -->
+        <div #mfeHost class="w-full h-full"></div>
       </div>
     </div>
   `
 })
-export class OnboardingComponent implements AfterViewInit {
+export class OnboardingComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('mfeHost', { read: ElementRef })
+  mfeHost?: ElementRef<HTMLElement>;
+
   isLoading = signal<boolean>(true);
 
   async ngAfterViewInit() {
     try {
-      // Al importar este módulo expuesto, el remoto ejecuta su bootstrap (si detecta el selector).
-      await loadRemoteModule('onboarding', './Bootstrap');
+      // Cargamos el módulo bootstrap del remoto, que re-exporta mount/unmount.
+      const remote = await loadRemoteModule('onboarding', './Bootstrap');
+      if (typeof remote.mount !== 'function') {
+        throw new TypeError('remote.mount is not a function (export faltante en remoto ./Bootstrap)');
+      }
+      await remote.mount(this.mfeHost!.nativeElement);
+      this._unmount = remote.unmount;
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  private _unmount?: () => void;
+
+  ngOnDestroy(): void {
+    try {
+      this._unmount?.();
+    } catch {
+      // noop
+    } finally {
+      this._unmount = undefined;
     }
   }
 }

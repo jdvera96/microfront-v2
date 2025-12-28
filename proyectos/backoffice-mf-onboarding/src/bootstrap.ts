@@ -1,6 +1,9 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideZonelessChangeDetection } from '@angular/core';
 
+// Exportar API de montaje para el Shell (evita pantallas en blanco al volver)
+export { mount, unmount } from './mount';
+
 // IMPORTANTE:
 // - Este archivo participa en el chunk "bootstrap" que hoy estás referenciando en `remoteEntry.json`.
 // - El Shell usa `loadRemoteModule(...).then(m => m.AppComponent)`.
