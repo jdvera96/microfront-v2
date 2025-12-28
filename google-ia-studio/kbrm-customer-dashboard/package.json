@@ -1,0 +1,34 @@
+{
+  "name": "kbrm-customer-dashboard",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "ng serve",
+    "build": "ng build",
+    "preview": "ng serve --configuration=production",
+    "mf:serve": "ng serve --port 4205",
+    "mf:serve:ng": "ng serve --port 4206",
+    "mf:build": "ng build --configuration=production",
+    "postinstall": "node ./tools/patch-native-federation.mjs"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.2",
+    "@angular/animations": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@google/genai": "^1.34.0",
+    "@angular/common": "^21.0.0",
+    "es-module-shims": "^1.10.0"
+  },
+  "devDependencies": {
+    "@angular-architects/native-federation": "^18.2.0",
+    "@angular/build": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
+    "@angular-devkit/build-angular": "^21.0.0",
+    "@types/node": "^22.14.0",
+    "typescript": "~5.9.2",
+    "vite": "^6.2.0"
+  }
+}

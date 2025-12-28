@@ -1,0 +1,10 @@
+{
+  "name": "kbrm-customer-dashboard",
+  "shared": [],
+  "exposes": [
+    {
+      "key": "./Bootstrap",
+      "outFileName": "chunk-PLACEHOLDER.js"
+    }
+  ]
+}

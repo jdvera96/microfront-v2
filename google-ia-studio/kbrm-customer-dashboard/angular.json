@@ -1,0 +1,65 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "",
+  "projects": {
+    "app": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "./",
+      "prefix": "app",
+      "architect": {
+        "appbuild": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": {
+              "base": "./dist",
+              "browser": "."
+            },
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "app:appbuild:production"
+          },
+          "configurations": {
+            "production": {
+              "target": "app:appbuild:production"
+            },
+            "development": {
+              "target": "app:appbuild:development"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "app:appbuild:development",
+            "dev": true,
+            "port": 4205,
+            "open": false
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}
