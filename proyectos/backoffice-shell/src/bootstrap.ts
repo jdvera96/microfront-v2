@@ -3,16 +3,12 @@ import { AppComponent } from './app.component';
 import { provideRouter, Routes } from '@angular/router';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { HomeComponent } from './components/home/home.component';
-import { loadRemoteModule } from '@angular-architects/native-federation';
+import { OnboardingComponent } from './components/onboarding/onboarding.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { 
-    path: 'onboarding', 
-    loadComponent: () => 
-      loadRemoteModule('onboarding', './Component').then((m) => m.AppComponent)
-  },
+  { path: 'onboarding', component: OnboardingComponent },
   { path: '**', redirectTo: 'home' }
 ];
 

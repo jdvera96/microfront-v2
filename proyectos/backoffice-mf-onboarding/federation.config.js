@@ -5,7 +5,12 @@ module.exports = withNativeFederation({
   name: 'onboarding',
 
   exposes: {
-    './Component': './src/app.component.ts',
+    // Para el Shell (render dentro del DOM del host):
+    // Importar este módulo ejecuta `bootstrap.ts` (con guard por selector).
+    './Bootstrap': './src/bootstrap.ts',
+
+    // Mantener expuesto el componente para escenarios alternativos
+    './Component': './src/remote-entry.ts',
   },
 
   shared: {

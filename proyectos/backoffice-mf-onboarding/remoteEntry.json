@@ -3,8 +3,12 @@
   "shared": [],
   "exposes": [
     {
+      "key": "./Bootstrap",
+      "outFileName": "chunk-ONVNS5B5.js"
+    },
+    {
       "key": "./Component",
-      "outFileName": "chunk-WSNANEQJ.js"
+      "outFileName": "chunk-ONVNS5B5.js"
     }
   ]
 }

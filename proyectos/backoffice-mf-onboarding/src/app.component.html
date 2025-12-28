@@ -1,38 +1,10 @@
-<!-- Shell Simulation Wrapper (Simulates being inside the Backoffice Shell) -->
-<div class="min-h-screen flex flex-col">
-  
-  <!-- Shell Header Simulation (To visualize how it fits) -->
-  <header class="bg-slate-900 text-white h-16 flex items-center px-6 border-b border-slate-700 shrink-0">
-    <div class="flex items-center gap-4">
-      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold">B</div>
-      <h1 class="font-semibold text-lg tracking-tight">backoffice-mf-onboarding</h1>
-    </div>
-    <div class="ml-auto flex items-center gap-4 text-sm text-slate-400">
-      <div class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">MFE: backoffice-mf-onboarding</div>
-      <div class="w-8 h-8 rounded-full bg-slate-700"></div>
-    </div>
-  </header>
-
-  <div class="flex flex-1 overflow-hidden">
-    <!-- Shell Sidebar Simulation -->
-    <aside class="w-64 bg-slate-50 border-r border-slate-200 hidden lg:block shrink-0 p-4">
-      <nav class="space-y-1">
-        <div class="px-3 py-2 text-sm font-medium text-slate-600 rounded-md hover:bg-slate-200/50 cursor-pointer">Dashboard</div>
-        <div class="px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md cursor-pointer">Alta Cliente</div>
-        <div class="px-3 py-2 text-sm font-medium text-slate-600 rounded-md hover:bg-slate-200/50 cursor-pointer">Cartera</div>
-        <div class="px-3 py-2 text-sm font-medium text-slate-600 rounded-md hover:bg-slate-200/50 cursor-pointer">Configuración</div>
-      </nav>
-    </aside>
-
-    <!-- MFE Content Area -->
-    <main class="flex-1 overflow-y-auto bg-white p-4 md:p-8 lg:p-10">
-      
-      <!-- Wizard Container -->
-      <div class="max-w-5xl mx-auto h-full flex flex-col">
+<!-- Onboarding Microfrontend - Renders inside Shell -->
+<div class="w-full p-4 md:p-8 lg:p-10">
+  <div class="max-w-5xl mx-auto">
         
         @if (step() < 5) {
           <div class="mb-8">
-            <h1 class="text-3xl font-bold text-slate-900 mb-2">Nueva Contratación</h1>
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Nueva Contratación v1</h1>
             <p class="text-slate-500">Producto: <span class="font-semibold text-blue-600">Conexión Única</span></p>
           </div>
 
@@ -79,8 +51,6 @@
           </div>
         }
 
-      </div>
-    </main>
   </div>
 </div>
 

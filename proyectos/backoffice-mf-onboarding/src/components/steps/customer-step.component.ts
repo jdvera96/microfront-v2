@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { OnboardingService } from '../../services/onboarding.service';
 import { CommonModule } from '@angular/common';
@@ -75,15 +75,19 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class CustomerStepComponent {
-  private fb = inject(FormBuilder);
-  private onboardingService = inject(OnboardingService);
-  
-  form = this.fb.group({
-    name: [this.onboardingService.customerData().name, [Validators.required, Validators.minLength(3)]],
-    docId: [this.onboardingService.customerData().docId, [Validators.required]],
-    email: [this.onboardingService.customerData().email, [Validators.required, Validators.email]],
-    phone: [this.onboardingService.customerData().phone, [Validators.required]]
-  });
+  form;
+
+  constructor(
+    private fb: FormBuilder,
+    private onboardingService: OnboardingService
+  ) {
+    this.form = this.fb.group({
+      name: [this.onboardingService.customerData().name, [Validators.required, Validators.minLength(3)]],
+      docId: [this.onboardingService.customerData().docId, [Validators.required]],
+      email: [this.onboardingService.customerData().email, [Validators.required, Validators.email]],
+      phone: [this.onboardingService.customerData().phone, [Validators.required]]
+    });
+  }
 
   onSubmit() {
     if (this.form.valid) {

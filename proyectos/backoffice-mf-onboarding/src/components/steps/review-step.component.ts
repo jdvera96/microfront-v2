@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { OnboardingService } from '../../services/onboarding.service';
 import { CommonModule } from '@angular/common';
 
@@ -137,11 +137,15 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class ReviewStepComponent {
-  private onboardingService = inject(OnboardingService);
-  
-  customer = this.onboardingService.customerData;
-  business = this.onboardingService.businessData;
-  product = this.onboardingService.productData;
+  customer;
+  business;
+  product;
+
+  constructor(private onboardingService: OnboardingService) {
+    this.customer = this.onboardingService.customerData;
+    this.business = this.onboardingService.businessData;
+    this.product = this.onboardingService.productData;
+  }
 
   termsAccepted = signal(false);
   isSubmitting = signal(false);

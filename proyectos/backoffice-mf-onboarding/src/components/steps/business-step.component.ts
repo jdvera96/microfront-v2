@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { OnboardingService } from '../../services/onboarding.service';
 import { GeminiService } from '../../services/gemini.service';
@@ -117,9 +117,11 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class BusinessStepComponent {
-  private fb = inject(FormBuilder);
-  private onboardingService = inject(OnboardingService);
-  private geminiService = inject(GeminiService);
+  constructor(
+    private fb: FormBuilder,
+    private onboardingService: OnboardingService,
+    private geminiService: GeminiService
+  ) {}
 
   isLoading = signal(false);
   

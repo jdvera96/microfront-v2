@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { OnboardingService } from '../../services/onboarding.service';
 import { CommonModule } from '@angular/common';
 
@@ -113,9 +113,11 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class ProductStepComponent {
-  private onboardingService = inject(OnboardingService);
-  
-  currentProduct = this.onboardingService.productData;
+  currentProduct;
+
+  constructor(private onboardingService: OnboardingService) {
+    this.currentProduct = this.onboardingService.productData;
+  }
 
   speeds = [
     { value: '300Mb', label: '300 Mb', desc: 'Ideal para pequeñas oficinas.', price: '39' },
