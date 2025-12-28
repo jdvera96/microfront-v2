@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "ng serve",
     "build": "ng build",
-    "preview": "ng serve --configuration=production"
+    "preview": "ng serve --configuration=production",
+    "mf:serve:ng": "ng serve --port 4202",
+    "mf:serve": "node ./dev-proxy.mjs"
   },
   "dependencies": {
     "@angular/build": "^21.0.0",

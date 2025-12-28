@@ -394,6 +394,41 @@ bootstrapApplication(AppComponent, {
 
 ### 1. Iniciar el Remote
 
+#### Opción recomendada (sin editar chunks manualmente)
+
+En Angular 21 + Native Federation en modo dev, el nombre del chunk (`chunk-XXXX.js`) puede cambiar en cada recompilación.
+Para evitar actualizar `remoteEntry.json` manualmente, el remoto incluye un **proxy dev** que genera `/remoteEntry.json` dinámicamente.
+
+- El **dev-server de Angular** del remoto corre en **4202**
+- El **proxy** corre en **4201** y sirve:
+  - `GET /remoteEntry.json` (dinámico)
+  - el resto de archivos proxyeados al dev-server
+
+Terminal 1 (Remote - Angular dev-server):
+
+```bash
+cd backoffice-mf-onboarding
+npm install --legacy-peer-deps
+npm run mf:serve:ng
+```
+
+Terminal 2 (Remote - proxy dinámico):
+
+```bash
+cd backoffice-mf-onboarding
+npm run mf:serve
+```
+
+**Verificar:**
+- `http://localhost:4201/remoteEntry.json` debe responder 200 (y mostrar el chunk vigente)
+- `http://localhost:4202/main.js` debe responder 200 (dev-server real)
+
+**Notas:**
+- En esta opción se levantan **dos procesos** del Remote: uno en `4202` (Angular dev-server) y otro en `4201` (proxy).
+- El Shell siempre debe apuntar al Remote vía `http://localhost:4201/remoteEntry.json` (proxy), para evitar editar chunks a mano.
+
+#### Opción simple (manual)
+
 ```bash
 cd backoffice-mf-onboarding
 npm install --legacy-peer-deps

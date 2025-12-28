@@ -23,11 +23,6 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "/assets"
-              },
-              {
-                "glob": "remoteEntry.json",
-                "input": ".",
-                "output": "/"
               }
             ]
           },
