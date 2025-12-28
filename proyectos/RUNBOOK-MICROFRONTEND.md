@@ -327,6 +327,48 @@ bootstrapApplication(AppComponent, {
 }
 ```
 
+---
+
+## Configuración centralizada: enable-mf.json (Shell)
+
+Para que sea **rápido y práctico** acoplar nuevos microfrontends, el Shell usa un archivo único:
+
+- `backoffice-shell/src/assets/enable-mf.json`
+
+Este archivo controla:
+- **Remotes** (URL del `remoteEntry.json`)
+- **Rutas** (path dentro del Shell)
+- **Sidebar** (opciones visibles y label)
+
+Ejemplo:
+
+```json
+{
+  "version": 1,
+  "microfrontends": [
+    {
+      "id": "onboarding",
+      "displayName": "Onboarding",
+      "routePath": "onboarding",
+      "remoteEntry": "http://localhost:4201/remoteEntry.json",
+      "mountModule": "./Bootstrap",
+      "enabled": true,
+      "nav": { "show": true, "badge": "MF" }
+    }
+  ]
+}
+```
+
+### Cómo agregar un nuevo MF
+
+1. Asegura que el nuevo remote exponga un módulo de montaje (por convención `./Bootstrap`).
+2. Agrega una entrada en `enable-mf.json`:
+   - **id**: nombre del remote (clave de Native Federation)
+   - **displayName**: texto para sidebar
+   - **routePath**: ruta dentro del Shell
+   - **remoteEntry**: URL del remoteEntry (idealmente vía proxy en dev)
+3. Reinicia el Shell (para recargar la configuración al inicio).
+
 **Formato:**
 ```json
 {

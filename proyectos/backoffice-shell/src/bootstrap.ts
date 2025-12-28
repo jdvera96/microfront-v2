@@ -3,19 +3,38 @@ import { AppComponent } from './app.component';
 import { provideRouter, Routes } from '@angular/router';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { HomeComponent } from './components/home/home.component';
-import { OnboardingComponent } from './components/onboarding/onboarding.component';
+import { RemoteMountPageComponent } from './mf/remote-mount-page.component';
+import { ENABLE_MF_CONFIG, EnableMfConfig } from './mf/mf-config';
 
-const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent },
-  { path: 'onboarding', component: OnboardingComponent },
-  { path: '**', redirectTo: 'home' }
-];
+function buildRoutes(cfg: EnableMfConfig): Routes {
+  const mfRoutes: Routes = (cfg.microfrontends || [])
+    .filter((m) => m.enabled !== false)
+    .map((m) => ({
+      path: m.routePath,
+      component: RemoteMountPageComponent,
+      data: {
+        remoteName: m.id,
+        mountModule: m.mountModule || './Bootstrap',
+        title: m.displayName,
+      },
+    }));
 
-bootstrapApplication(AppComponent, {
-  providers: [
-    provideZonelessChangeDetection(),
-    provideRouter(routes)
-  ]
-}).catch(err => console.error(err));
+  return [
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: 'home', component: HomeComponent },
+    ...mfRoutes,
+    { path: '**', redirectTo: 'home' },
+  ];
+}
+
+export function bootstrapShell(cfg: EnableMfConfig) {
+  const routes = buildRoutes(cfg);
+  return bootstrapApplication(AppComponent, {
+    providers: [
+      provideZonelessChangeDetection(),
+      { provide: ENABLE_MF_CONFIG, useValue: cfg },
+      provideRouter(routes),
+    ],
+  }).catch((err) => console.error(err));
+}
 

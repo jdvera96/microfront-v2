@@ -1,5 +1,6 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ENABLE_MF_CONFIG } from '../../mf/mf-config';
 
 @Component({
   selector: 'app-sidebar',
@@ -23,16 +24,20 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           <span class="font-medium">home</span>
         </a>
 
-        <a routerLink="/onboarding" 
-           routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/50"
-           [routerLinkActiveOptions]="{exact: true}"
-           class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-all group">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-          <span class="font-medium">Onboarding</span>
-          <span class="ml-auto bg-blue-500 text-xs px-2 py-0.5 rounded-full text-white font-bold">MF</span>
-        </a>
+        @for (mf of navItems(); track mf.id) {
+          <a [routerLink]="'/' + mf.routePath" 
+             routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/50"
+             [routerLinkActiveOptions]="{exact: true}"
+             class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-all group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <span class="font-medium">{{ mf.displayName }}</span>
+            @if (mf.nav?.badge) {
+              <span class="ml-auto bg-blue-500 text-xs px-2 py-0.5 rounded-full text-white font-bold">{{ mf.nav?.badge }}</span>
+            }
+          </a>
+        }
       </nav>
 
       <div class="p-4 border-t border-slate-800">
@@ -51,4 +56,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     </aside>
   `
 })
-export class SidebarComponent {}
+export class SidebarComponent {
+  private cfg = inject(ENABLE_MF_CONFIG);
+
+  navItems = computed(() =>
+    (this.cfg.microfrontends || [])
+      .filter((m) => m.enabled !== false)
+      .filter((m) => m.nav?.show !== false)
+  );
+}

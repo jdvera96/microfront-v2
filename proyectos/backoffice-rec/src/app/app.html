@@ -1,0 +1,15 @@
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">R</span>
+      <span class="title">Backoffice REC</span>
+    </div>
+    <nav class="nav">
+      <a routerLink="/report" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Reporte</a>
+    </nav>
+  </header>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

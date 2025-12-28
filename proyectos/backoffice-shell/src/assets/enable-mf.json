@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "microfrontends": [
+    {
+      "id": "onboarding",
+      "displayName": "Onboarding",
+      "routePath": "onboarding",
+      "remoteEntry": "http://localhost:4201/remoteEntry.json",
+      "mountModule": "./Bootstrap",
+      "enabled": true,
+      "nav": {
+        "show": true,
+        "badge": "MF"
+      }
+    },
+    {
+      "id": "financiero",
+      "displayName": "Financiero",
+      "routePath": "financiero",
+      "remoteEntry": "http://localhost:4203/remoteEntry.json",
+      "mountModule": "./Bootstrap",
+      "enabled": true,
+      "nav": {
+        "show": true,
+        "badge": "MF"
+      }
+    }
+  ]
+}
+
+
