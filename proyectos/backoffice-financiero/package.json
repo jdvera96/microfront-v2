@@ -2,13 +2,15 @@
   "name": "finconcilia---reportes-financieros",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "ng serve",
     "build": "ng build",
     "preview": "ng serve --configuration=production",
+    "postinstall": "node ../tools/patch-native-federation.mjs",
     "mf:serve:ng": "ng serve --port 4204",
-    "mf:serve": "node ./dev-proxy.mjs"
+    "mf:serve": "node ./dev-proxy.mjs",
+    "mf:build": "ng build --configuration=production",
+    "mf:postbuild": "node ../tools/generate-remote-entry.mjs --dist dist --name financiero --out remoteEntry.json"
   },
   "dependencies": {
     "rxjs": "^7.8.2",
@@ -17,12 +19,12 @@
     "@angular/common": "^21.0.0",
     "@angular/core": "^21.0.0",
     "@angular/platform-browser": "^21.0.0",
-    "@angular/build": "^21.0.0",
-    "@angular/cli": "^21.0.0",
-    "@angular/compiler-cli": "^21.0.0",
     "tailwindcss": "latest"
   },
   "devDependencies": {
+    "@angular/build": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
     "@angular-architects/native-federation": "^18.2.0",
     "@angular-devkit/build-angular": "^21.0.4",
     "@types/node": "^22.14.0",
