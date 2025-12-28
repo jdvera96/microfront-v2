@@ -1,0 +1,102 @@
+<!-- Shell Simulation Wrapper (Simulates being inside the Backoffice Shell) -->
+<div class="min-h-screen flex flex-col">
+  
+  <!-- Shell Header Simulation (To visualize how it fits) -->
+  <header class="bg-slate-900 text-white h-16 flex items-center px-6 border-b border-slate-700 shrink-0">
+    <div class="flex items-center gap-4">
+      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold">B</div>
+      <h1 class="font-semibold text-lg tracking-tight">backoffice-mf-onboarding</h1>
+    </div>
+    <div class="ml-auto flex items-center gap-4 text-sm text-slate-400">
+      <div class="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">MFE: backoffice-mf-onboarding</div>
+      <div class="w-8 h-8 rounded-full bg-slate-700"></div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Shell Sidebar Simulation -->
+    <aside class="w-64 bg-slate-50 border-r border-slate-200 hidden lg:block shrink-0 p-4">
+      <nav class="space-y-1">
+        <div class="px-3 py-2 text-sm font-medium text-slate-600 rounded-md hover:bg-slate-200/50 cursor-pointer">Dashboard</div>
+        <div class="px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md cursor-pointer">Alta Cliente</div>
+        <div class="px-3 py-2 text-sm font-medium text-slate-600 rounded-md hover:bg-slate-200/50 cursor-pointer">Cartera</div>
+        <div class="px-3 py-2 text-sm font-medium text-slate-600 rounded-md hover:bg-slate-200/50 cursor-pointer">Configuración</div>
+      </nav>
+    </aside>
+
+    <!-- MFE Content Area -->
+    <main class="flex-1 overflow-y-auto bg-white p-4 md:p-8 lg:p-10">
+      
+      <!-- Wizard Container -->
+      <div class="max-w-5xl mx-auto h-full flex flex-col">
+        
+        @if (step() < 5) {
+          <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Nueva Contratación</h1>
+            <p class="text-slate-500">Producto: <span class="font-semibold text-blue-600">Conexión Única</span></p>
+          </div>
+
+          <!-- Stepper -->
+          <app-stepper [currentStep]="step()" class="mb-10 block"></app-stepper>
+
+          <!-- Step Content -->
+          <div class="flex-1 animate-fadeIn">
+            @if (step() === 1) {
+              <app-customer-step></app-customer-step>
+            }
+            @if (step() === 2) {
+              <app-business-step></app-business-step>
+            }
+            @if (step() === 3) {
+              <app-product-step></app-product-step>
+            }
+            @if (step() === 4) {
+              <app-review-step></app-review-step>
+            }
+          </div>
+        }
+
+        <!-- Success Screen -->
+        @if (step() === 5) {
+          <div class="flex-1 flex flex-col items-center justify-center text-center animate-popIn">
+            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 text-green-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-slate-900 mb-4">¡Contratación Exitosa!</h2>
+            <p class="text-slate-600 max-w-md mb-8">
+              El proceso de onboarding para el producto <strong>Conexión Única</strong> se ha iniciado correctamente. El cliente recibirá un email con los detalles.
+            </p>
+            <div class="flex gap-4">
+              <button 
+                (click)="restart()" 
+                class="px-6 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium"
+              >
+                Nuevo Registro
+              </button>
+            </div>
+          </div>
+        }
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+  .animate-popIn {
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+</style>

@@ -1,0 +1,5 @@
+{
+  "name": "backoffice-mf-onboarding",
+  "description": "Micro-frontend para el proceso de onboarding del producto Conexión Única, diseñado para integrarse en backoffice-shell.",
+  "requestFramePermissions": []
+}

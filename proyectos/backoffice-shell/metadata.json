@@ -1,0 +1,5 @@
+{
+  "name": "backoffice-shell",
+  "description": "A Microfrontend Shell application for the Backoffice system, featuring a dashboard and remote onboarding module integration.",
+  "requestFramePermissions": []
+}

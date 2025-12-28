@@ -1,0 +1,10 @@
+{
+  "name": "onboarding",
+  "shared": [],
+  "exposes": [
+    {
+      "key": "./Component",
+      "outFileName": "chunk-NTU4FJE2.js"
+    }
+  ]
+}
