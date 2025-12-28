@@ -3,7 +3,7 @@
   "microfrontends": [
     {
       "id": "financiero",
-      "displayName": "Financiero",
+      "displayName": "Financiero build",
       "routePath": "financiero",
       "remoteEntry": "http://localhost:4203/remoteEntry.json",
       "mountModule": "./Bootstrap",
@@ -14,16 +14,12 @@
       }
     },
     {
-      "id": "kbrm-customer-dashboard",
-      "displayName": "Customer Dashboard",
-      "routePath": "kbrm-customer-dashboard",
-      "remoteEntry": "http://localhost:4203/remoteEntry.json",
+      "id": "bankCloud",
+      "displayName": "Bancos Cloud",
+      "routePath": "bank",
+      "remoteEntry": "https://mf-remote-bank-83864446244.us-east1.run.app/remoteEntry.json",
       "mountModule": "./Bootstrap",
-      "enabled": true,
-      "nav": {
-        "show": true,
-        "badge": "MF"
-      }
+      "enabled": true
     }
   ]
 }

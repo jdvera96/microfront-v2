@@ -1,157 +1,293 @@
-# Convertir cualquier Angular a Remote (Native Federation) — paso a paso
+## Instrucciones para IA (Google AI Studio): Convertir cualquier Angular a Microfrontend Remote (Native Federation)
 
-Objetivo: que cualquier equipo pueda “convertir” su Angular a Microfrontend Remote y que el Shell lo consuma **solo agregando 1 entrada** en `backoffice-shell/src/assets/enable-mf.json`.
+Este documento está escrito para que lo copies/pegues dentro de Google AI Studio (o cualquier IA) y la IA pueda ejecutar **paso por paso** la conversión de un proyecto Angular a **Remote** consumible por un **Shell**.
 
-> Este repo usa el patrón **RemoteMount**: el Shell no importa componentes Angular del Remote. En su lugar, carga un módulo remoto `./Bootstrap` y llama `mount(host)` / `unmount()`.
+### Qué arquitectura usa este repo
+
+- **Patrón `RemoteMount`**: el Shell NO importa componentes del Remote como rutas Angular.
+- El Shell carga un módulo remoto `./Bootstrap` y llama funciones:
+  - `mount(hostElement)`
+  - `unmount()`
+
+Eso hace que el acoplamiento sea mínimo: el Remote se “inyecta” dentro del DOM del Shell.
 
 ---
 
-## 0) Requisitos
+## 0) Datos que la IA debe pedirte (o decidir con defaults)
+
+Antes de hacer cambios, la IA debe definir:
+
+- **`REMOTE_ID`**: string único, ej: `financiero`, `reportes`, `kpis`
+- **Selector del remoto** (único): `app-<REMOTE_ID>-mfe` (ej: `app-financiero-mfe`)
+- **Puertos DEV** (solo si quieres dev con proxy):
+  - **Proxy público**: 420N (ej: 4203)
+  - **Dev-server interno**: 420N+1 (ej: 4204)
+- **Ruta en Shell**: `routePath` (ej: `financiero`)
+
+---
+
+## 1) Requisitos (versiones recomendadas)
 
 - Node 20+
 - Angular 21
-- TypeScript (idealmente >= 5.9 < 6.0)
-- `@angular-architects/native-federation` ^18.2.0
+- TypeScript (idealmente \(>= 5.9 < 6.0\))
+- Native Federation: `@angular-architects/native-federation` ^18.2.0
 - `es-module-shims`
 
 ---
 
-## 1) Elegir un ID y puertos (convención)
+## 2) Instalar librerías (Remote)
 
-Define:
-- **`REMOTE_ID`**: nombre único (ej: `financiero`, `reportes`, `kpis`)
-- **Dev-server interno**: 420N+1 (ej: 4204)
-- **Proxy público**: 420N (ej: 4203)
+En la raíz del Remote, asegurar (como `devDependencies`):
 
-Esto permite que el Shell siempre apunte a un `remoteEntry.json` estable en el proxy.
+- `@angular-architects/native-federation`
+- `@angular-devkit/build-angular`
+- `es-module-shims`
+- (si no existen) `@angular/cli`, `@angular/build`, `@angular/compiler-cli`
 
----
+Comando recomendado:
 
-## 2) En el Remote: selector único (crítico)
+```bash
+npm install --legacy-peer-deps
+```
 
-Evita usar `app-root` (choca con el Shell).
-
-- Cambia el selector del root component a algo único (ej: `app-<REMOTE_ID>-mfe`)
-- Cambia `index.html` para usar ese selector
-
-Ejemplo:
-- `app.component.ts` -> `selector: 'app-financiero-mfe'`
-- `index.html` -> `<app-financiero-mfe></app-financiero-mfe>`
+> Nota: en algunos proyectos AI Studio aparece `"type": "module"` en `package.json`.  
+> **Para este setup, quítalo** (o el `federation.config.js` puede romper por `require`).
 
 ---
 
-## 3) Agregar archivos “MF” en `src/`
+## 3) Selector único (CRÍTICO)
+
+Si tu root component usa `selector: 'app-root'`, cámbialo a un selector único:
+
+- `selector: 'app-<REMOTE_ID>-mfe'`
+
+Luego en `index.html`, cambia:
+
+- `<app-root></app-root>`
+- por `<app-<REMOTE_ID>-mfe></app-<REMOTE_ID>-mfe>`
+
+Esto evita choque con el Shell (que casi siempre usa `app-root`).
+
+---
+
+## 4) Crear/ajustar archivos MF en `src/` (Remote)
+
+### 4.1 `src/main.ts`
+
+Crear (o reemplazar) con:
+
+```ts
+import('./bootstrap').catch((err) => console.error(err));
+```
+
+### 4.2 `src/mount.ts`
+
+Crear con una API estable de montaje:
+
+```ts
+import { ApplicationRef, provideZonelessChangeDetection } from '@angular/core';
+import { createApplication } from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+
+let appRef: ApplicationRef | null = null;
+let componentRef: { destroy(): void } | null = null;
+
+export async function mount(host: Element) {
+  unmount();
+  appRef = await createApplication({
+    providers: [provideZonelessChangeDetection()],
+  });
+  componentRef = appRef.bootstrap(AppComponent as any, host);
+}
+
+export function unmount() {
+  try {
+    componentRef?.destroy();
+  } finally {
+    componentRef = null;
+    appRef?.destroy();
+    appRef = null;
+  }
+}
+```
+
+### 4.3 `src/bootstrap.ts`
+
+Crear con:
+
+- exporta `mount/unmount`
+- hace `bootstrapApplication(...)` SOLO si existe el selector del Remote en el DOM
+
+```ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { AppComponent } from './app.component';
+
+export { mount, unmount } from './mount';
+
+const selectorExists = document.querySelector('app-<REMOTE_ID>-mfe');
+if (selectorExists) {
+  bootstrapApplication(AppComponent, {
+    providers: [provideZonelessChangeDetection()],
+  }).catch((err) => console.error(err));
+}
+```
+
+> La IA debe reemplazar literalmente `app-<REMOTE_ID>-mfe` por el selector real (ej: `app-financiero-mfe`).
+
+### 4.4 `src/remote-entry.ts` (opcional)
 
 Crear:
-- `src/main.ts`
-- `src/bootstrap.ts` (exporta mount/unmount + bootstrap condicional)
-- `src/mount.ts` (API de montaje)
-- `src/remote-entry.ts` (export opcional del componente)
 
-### `src/main.ts`
-
-Debe ser solo:
-- `import('./bootstrap')`
-
-### `src/bootstrap.ts`
-
-Reglas:
-- Exporta `mount` y `unmount`
-- Solo hace `bootstrapApplication(...)` si el selector del remoto existe en el DOM
-  - Standalone: sí existe
-  - Dentro del Shell: **NO** existe (y no debe bootstrapease)
-
-### `src/mount.ts`
-
-Implementa:
-- `mount(host: Element)`
-- `unmount()`
+```ts
+export { AppComponent } from './app.component';
+```
 
 ---
 
-## 4) Native Federation config
+## 5) Crear `federation.config.js` (Remote)
 
-Crear `federation.config.js` en la raíz del Remote:
+En la raíz del proyecto Remote, crear `federation.config.js`:
 
-- `name: '<REMOTE_ID>'`
-- `exposes` mínimo:
-  - `./Bootstrap` -> `./src/bootstrap.ts`
+```js
+const { withNativeFederation, shareAll } = require('@angular-architects/native-federation/config');
 
-Recomendado (como este repo):
-- También exponer `./Mount` y `./Component` apuntando al mismo chunk.
+module.exports = withNativeFederation({
+  name: '<REMOTE_ID>',
 
----
+  exposes: {
+    './Bootstrap': './src/bootstrap.ts',
+    './Mount': './src/mount.ts',
+    './Component': './src/remote-entry.ts',
+  },
 
-## 5) Ajustar Angular build/serve
+  shared: {
+    ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
+  },
 
-### `angular.json`
+  skip: ['rxjs/ajax', 'rxjs/fetch', 'rxjs/testing', 'rxjs/webSocket'],
+});
+```
 
-- `build.builder`: `@angular-architects/native-federation:build`
-- `build.options.browser`: `src/main.ts`
-- `serve`: `@angular/build:dev-server`
-- Puertos:
-  - interno (dev-server): 420N+1
-
----
-
-## 6) Scripts en `package.json`
-
-Agregar:
-- `mf:serve:ng`: levanta el dev-server interno
-- `mf:serve`: proxy que sirve `remoteEntry.json` dinámico (dev)
+La IA debe reemplazar `<REMOTE_ID>` por el ID real.
 
 ---
 
-## 7) Producción / Deploy estático (AI Studio, S3, etc.)
+## 6) Ajustar `angular.json` (Remote)
 
-Problema: en prod no tienes proxy dev y el chunk cambia.
+### Objetivo
+Tener dos “builds”:
 
-Solución recomendada: **postbuild** que genera `remoteEntry.json` leyendo el bundle generado.
+- `app:esbuild:*` (Angular normal, rápido, **no se cuelga**)
+- `app:build:*` (Native Federation wrapper que referencia el `target` esbuild)
 
-En este repo existe:
+### Recomendación práctica (la que usamos aquí)
+
+- Crear `architect.esbuild` con `@angular/build:application`
+- `architect.build` usa `@angular-architects/native-federation:build` pero SOLO con `target`
+- `serve` sigue siendo `@angular/build:dev-server` apuntando a `app:esbuild:*`
+
+---
+
+## 7) `remoteEntry.json` para DEV vs PROD
+
+### 7.1 DEV (recomendado): proxy dinámico (sin editar chunks)
+
+- El Remote levanta:
+  - dev-server interno (ej: 4204)
+  - proxy público (ej: 4203) que sirve `GET /remoteEntry.json` con el chunk actual
+
+Esto requiere un `dev-proxy.mjs` similar al de este repo.
+
+### 7.2 PROD / AI Studio (no hay proxy): generar `remoteEntry.json` desde el build
+
+Problema: el chunk cambia en cada build (ej: `chunk-ABCD1234.js`).
+
+Solución: después del build, correr un “postbuild” que:
+
+- lee `dist/main*.js`
+- extrae el `chunk-XXXX.js` del `import("./chunk-XXXX.js")`
+- escribe `remoteEntry.json` con `outFileName: "chunk-XXXX.js"`
+
+En este repo el generador es:
 - `tools/generate-remote-entry.mjs`
 
-Agrega en el Remote:
-- `mf:build`: `ng run app:esbuild:production` (recomendado: evita colgarse en el build de Native Federation)
-- `mf:postbuild`: `node ../tools/generate-remote-entry.mjs --dist dist --name <REMOTE_ID> --out remoteEntry.json`
+---
 
-Flujo:
-1) `npm run mf:build`
-2) `npm run mf:postbuild`
-3) Despliega `dist/` + `remoteEntry.json` (en la misma base URL)
+## 8) Scripts recomendados en `package.json` (Remote)
 
-### Nota importante (Angular 21 + Native Federation 18.2.x)
+Agregar:
 
-En Angular 21, Native Federation 18.2.x puede fallar en build por imports internos movidos (Tailwind / dev-server options).
-Para no parchear a mano, este repo incluye:
+- **Para PROD (AI Studio)**:
+  - `mf:build`: `ng run app:esbuild:production`
+  - `mf:postbuild`: `node ../tools/generate-remote-entry.mjs --dist dist --name <REMOTE_ID> --out remoteEntry.json`
+
+- **Para DEV (opcional)**:
+  - `mf:serve:ng`: `ng serve --port <DEV_SERVER_PORT>`
+  - `mf:serve`: `node ./dev-proxy.mjs`
+
+### Importante: `remoteEntry.json` dentro de `dist/`
+
+Para que sea “deployable” (AI Studio / server estático), el archivo final debe vivir en:
+
+- `dist/remoteEntry.json`
+
+La forma más simple:
+
+- Después de `mf:postbuild`, copiar:
+  - `remoteEntry.json` -> `dist/remoteEntry.json`
+
+En Windows:
+
+```bash
+copy remoteEntry.json dist\\remoteEntry.json
+```
+
+---
+
+## 9) Parche automático (Angular 21 + Native Federation 18.2.x)
+
+Si el builder NF falla por imports internos movidos (Tailwind / dev-server options), este repo incluye:
+
 - `tools/patch-native-federation.mjs`
 
-Recomendación: agrega en el Remote:
+Recomendación: agregar en `package.json` del Remote:
+
 - `postinstall`: `node ../tools/patch-native-federation.mjs`
 
 ---
 
-## 8) Registrar en el Shell (1 solo cambio)
+## 10) Registrar el Remote en el Shell (1 solo cambio)
 
-Editar `backoffice-shell/src/assets/enable-mf.json` y agregar:
+En el Shell edita:
+
+- `backoffice-shell/src/assets/enable-mf.json`
+
+Agrega una entrada:
 
 - `id`: `<REMOTE_ID>`
-- `routePath`: ruta en el Shell
-- `remoteEntry`: URL pública donde vive el remoteEntry.json
+- `displayName`: texto para el sidebar
+- `routePath`: ej `financiero`
+- `remoteEntry`: URL a `remoteEntry.json` (dev o prod)
 - `mountModule`: `./Bootstrap`
-
-Reinicia el Shell.
+- `enabled`: `true`
 
 ---
 
-## 9) Checklist rápido
+## 11) Verificación (lo que la IA debe pedirte comprobar)
 
-- [ ] Selector único (no `app-root`)
-- [ ] `federation.config.js` con `name` y `./Bootstrap`
-- [ ] `angular.json` con builder de Native Federation
-- [ ] `src/main.ts` -> importa bootstrap
-- [ ] `bootstrap.ts` NO bootstrapea dentro del Shell
-- [ ] `enable-mf.json` tiene el remote registrado
-- [ ] URL de `remoteEntry.json` responde 200
+### DEV
+- `http://localhost:<proxy>/remoteEntry.json` responde 200 y contiene el chunk
+- El Shell carga `/<routePath>` sin errores
+
+### PROD / AI Studio
+- `dist/` contiene `main-*.js` y `chunk-*.js`
+- `dist/remoteEntry.json` existe
+- El `outFileName` del remoteEntry existe dentro de `dist/`
+- Desde el navegador:
+  - `<URL_PUBLICA>/remoteEntry.json` responde 200
+  - `<URL_PUBLICA>/<chunk-XXXX.js>` responde 200
+
 
 
