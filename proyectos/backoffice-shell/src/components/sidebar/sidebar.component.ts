@@ -13,8 +13,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       </div>
 
       <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
-        <a routerLink="/" 
-           routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/50" 
+        <a routerLink="/home" 
+           routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/50"
+           [routerLinkActiveOptions]="{exact: true}"
            class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-all group">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -23,7 +24,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         </a>
 
         <a routerLink="/onboarding" 
-           routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/50" 
+           routerLinkActive="bg-blue-600 text-white shadow-lg shadow-blue-900/50"
+           [routerLinkActiveOptions]="{exact: true}"
            class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-all group">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
