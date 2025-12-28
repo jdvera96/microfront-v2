@@ -1,6 +1,6 @@
 {
   "name": "shell",
-  "exposes": {},
+  "exposes": [],
   "shared": []
 }
 

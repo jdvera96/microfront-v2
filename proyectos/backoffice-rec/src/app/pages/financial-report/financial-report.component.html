@@ -1,0 +1,67 @@
+<div class="page">
+  <header class="header">
+    <div>
+      <h1>Reporte de conciliación</h1>
+      <p>Archivos financieros pendientes de conciliación y su estado.</p>
+    </div>
+  </header>
+
+  <section class="toolbar">
+    <div class="field">
+      <label>Búsqueda</label>
+      <input [(ngModel)]="search" placeholder="Buscar por ID, archivo o fuente..." />
+    </div>
+
+    <div class="field">
+      <label>Estado</label>
+      <select [(ngModel)]="status">
+        <option value="Todos">Todos</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="En revisión">En revisión</option>
+        <option value="Conciliado">Conciliado</option>
+        <option value="Observado">Observado</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Archivo</th>
+          <th>Fuente</th>
+          <th>Periodo</th>
+          <th>Registros</th>
+          <th>Monto</th>
+          <th>Estado</th>
+          <th>Notas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of filtered">
+          <td class="mono">{{ f.id }}</td>
+          <td>
+            <div class="file">
+              <div class="name">{{ f.fileName }}</div>
+              <div class="sub">Subido: {{ f.uploadedAt | date:'medium' }}</div>
+            </div>
+          </td>
+          <td>{{ f.source }}</td>
+          <td>{{ f.period }}</td>
+          <td class="right">{{ f.records | number }}</td>
+          <td class="right mono">{{ formatMoney(f.amount, f.currency) }}</td>
+          <td>
+            <span [class]="badgeClass(f.status)">{{ f.status }}</span>
+          </td>
+          <td class="muted">{{ f.notes || '—' }}</td>
+        </tr>
+        <tr *ngIf="filtered.length === 0">
+          <td colspan="8" class="empty">No hay resultados con los filtros actuales.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+

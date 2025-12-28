@@ -1,0 +1,12 @@
+{
+  "name": "financiero",
+  "shared": [],
+  "exposes": [
+    {
+      "key": "./Bootstrap",
+      "outFileName": "chunk-PLACEHOLDER.js"
+    }
+  ]
+}
+
+

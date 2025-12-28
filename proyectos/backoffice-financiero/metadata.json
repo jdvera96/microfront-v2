@@ -1,0 +1,5 @@
+{
+  "name": "FinConcilia - Reportes Financieros",
+  "description": "Panel de control para la conciliación de archivos financieros entre PSPs y registros de clientes, con análisis de discrepancias asistido por IA.",
+  "requestFramePermissions": []
+}

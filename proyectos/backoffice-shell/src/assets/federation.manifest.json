@@ -1,4 +1,5 @@
 {
-	"onboarding": "http://localhost:4201/remoteEntry.json"
+	"onboarding": "http://localhost:4201/remoteEntry.json",
+	"financiero": "http://localhost:4203/remoteEntry.json"
 }
 

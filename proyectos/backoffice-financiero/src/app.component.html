@@ -1,0 +1,225 @@
+<div class="min-h-screen bg-slate-50 text-slate-900 pb-12">
+  
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-600 p-2 rounded-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h1 class="text-xl font-bold text-slate-800">FinConcilia</h1>
+      </div>
+      <div class="flex items-center gap-4 text-sm text-slate-500">
+        <span>Usuario: <strong>Admin Financiero</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-sm font-medium text-slate-500 mb-1">Volumen Total Procesado</p>
+        <p class="text-2xl font-bold text-slate-800">{{ stats().totalVolume | currency:'USD':'symbol':'1.0-0' }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-sm font-medium text-slate-500 mb-1">Reportes Conciliados</p>
+        <p class="text-2xl font-bold text-emerald-600">{{ stats().matchedCount }}</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-sm font-medium text-slate-500 mb-1">Discrepancias Activas</p>
+        <p class="text-2xl font-bold text-rose-600">{{ stats().discrepancyCount }}</p>
+      </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="flex flex-col lg:flex-row gap-8">
+      
+      <!-- List View -->
+      <div class="flex-1 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden h-[calc(100vh-300px)] flex flex-col">
+        <!-- Filters -->
+        <div class="p-4 border-b border-slate-100 flex gap-2">
+          <button 
+            (click)="setFilter('ALL')"
+            [class.bg-slate-800]="filterStatus() === 'ALL'"
+            [class.text-white]="filterStatus() === 'ALL'"
+            [class.bg-slate-100]="filterStatus() !== 'ALL'"
+            [class.text-slate-600]="filterStatus() !== 'ALL'"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            Todos
+          </button>
+          <button 
+            (click)="setFilter('DISCREPANCY')"
+            [class.bg-rose-600]="filterStatus() === 'DISCREPANCY'"
+            [class.text-white]="filterStatus() === 'DISCREPANCY'"
+            [class.bg-slate-100]="filterStatus() !== 'DISCREPANCY'"
+            [class.text-slate-600]="filterStatus() !== 'DISCREPANCY'"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            Discrepancias
+          </button>
+           <button 
+            (click)="setFilter('MATCHED')"
+            [class.bg-emerald-600]="filterStatus() === 'MATCHED'"
+            [class.text-white]="filterStatus() === 'MATCHED'"
+            [class.bg-slate-100]="filterStatus() !== 'MATCHED'"
+            [class.text-slate-600]="filterStatus() !== 'MATCHED'"
+            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            Conciliados
+          </button>
+        </div>
+
+        <!-- Table Header -->
+        <div class="grid grid-cols-12 gap-4 p-4 bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <div class="col-span-3">Fecha / ID</div>
+          <div class="col-span-3">PSP</div>
+          <div class="col-span-3 text-right">Monto PSP</div>
+          <div class="col-span-3 text-center">Estado</div>
+        </div>
+
+        <!-- Scrollable List -->
+        <div class="overflow-y-auto flex-1">
+          @for (report of filteredReports(); track report.id) {
+            <div 
+              (click)="selectReport(report.id)"
+              class="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 cursor-pointer transition-colors hover:bg-blue-50"
+              [class.bg-blue-50]="selectedReportId() === report.id"
+            >
+              <div class="col-span-3 flex flex-col justify-center">
+                <span class="font-medium text-slate-800">{{ report.date | date:'shortDate' }}</span>
+                <span class="text-xs text-slate-500">{{ report.id }}</span>
+              </div>
+              <div class="col-span-3 flex items-center">
+                <span class="font-medium text-slate-700">{{ report.pspName }}</span>
+              </div>
+              <div class="col-span-3 flex items-center justify-end">
+                <span class="font-mono text-slate-600">{{ report.totalAmountPsp | currency:'USD' }}</span>
+              </div>
+              <div class="col-span-3 flex items-center justify-center">
+                <span 
+                  class="px-2 py-1 rounded-full text-xs font-semibold border"
+                  [class]="getStatusColor(report.status)"
+                >
+                  {{ report.status }}
+                </span>
+              </div>
+            </div>
+          } @empty {
+            <div class="p-8 text-center text-slate-400">
+              No hay reportes que coincidan con el filtro.
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Detail View (Sidebar/Panel) -->
+      @if (selectedReport(); as report) {
+        <div class="lg:w-[450px] bg-white rounded-xl border border-slate-200 shadow-lg flex flex-col h-[calc(100vh-300px)] animate-fade-in-right">
+          
+          <!-- Detail Header -->
+          <div class="p-6 border-b border-slate-100 flex justify-between items-start bg-slate-50 rounded-t-xl">
+            <div>
+              <h2 class="text-lg font-bold text-slate-800">Detalle de Conciliación</h2>
+              <p class="text-sm text-slate-500">{{ report.id }}</p>
+            </div>
+            <button (click)="closeDetail()" class="text-slate-400 hover:text-slate-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="overflow-y-auto flex-1 p-6 space-y-6">
+            
+            <!-- Summary Stats -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <span class="text-xs text-slate-500 block">Total PSP</span>
+                <span class="text-lg font-semibold text-slate-800">{{ report.totalAmountPsp | currency:'USD' }}</span>
+                <span class="text-xs text-slate-400 block">{{ report.totalTransactionsPsp }} txns</span>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <span class="text-xs text-slate-500 block">Total Cliente</span>
+                <span class="text-lg font-semibold text-slate-800">{{ report.totalAmountCustomer | currency:'USD' }}</span>
+                <span class="text-xs text-slate-400 block">{{ report.totalTransactionsCustomer }} txns</span>
+              </div>
+            </div>
+
+             <!-- Discrepancy List -->
+            @if (report.discrepancies.length > 0) {
+              <div>
+                <h3 class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  Discrepancias Detectadas
+                </h3>
+                <div class="space-y-3">
+                  @for (disc of report.discrepancies; track disc.transactionId) {
+                    <div class="p-3 bg-rose-50 rounded-lg border border-rose-100 text-sm">
+                      <div class="flex justify-between mb-1">
+                        <span class="font-semibold text-rose-800">{{ disc.type }}</span>
+                        <span class="text-rose-600 font-mono font-bold">
+                          {{ disc.differenceAmount ? (disc.differenceAmount | currency) : 'N/A' }}
+                        </span>
+                      </div>
+                      <p class="text-rose-700 mb-1">{{ disc.description }}</p>
+                      <span class="text-xs text-rose-500 bg-rose-100 px-2 py-0.5 rounded">ID: {{ disc.transactionId }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- AI Analysis Section -->
+              <div class="pt-4 border-t border-slate-100">
+                <div class="flex justify-between items-center mb-3">
+                  <h3 class="text-sm font-bold text-purple-700 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Análisis IA
+                  </h3>
+                  @if (!report.aiAnalysis && !report.isAnalyzing) {
+                    <button 
+                      (click)="analyzeWithAi(report)"
+                      class="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-md hover:bg-purple-700 transition-colors shadow-sm font-medium">
+                      Analizar con Gemini
+                    </button>
+                  }
+                </div>
+
+                @if (report.isAnalyzing) {
+                  <div class="p-4 bg-purple-50 rounded-lg border border-purple-100 flex items-center justify-center gap-3">
+                     <svg class="animate-spin h-5 w-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-sm text-purple-700 font-medium">Generando insight financiero...</span>
+                  </div>
+                }
+
+                @if (report.aiAnalysis) {
+                  <div class="p-4 bg-gradient-to-br from-purple-50 to-white rounded-lg border border-purple-200 text-sm text-slate-700 leading-relaxed shadow-sm">
+                    <div [innerHTML]="formatMarkdown(report.aiAnalysis)"></div>
+                  </div>
+                }
+              </div>
+
+            } @else {
+              <div class="h-full flex flex-col items-center justify-center text-slate-400 p-8 text-center border-2 border-dashed border-slate-100 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 text-emerald-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="font-medium text-slate-600">Conciliación Exitosa</p>
+                <p class="text-sm">No se encontraron discrepancias entre los archivos del PSP y el Cliente.</p>
+              </div>
+            }
+
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>
