@@ -112,7 +112,7 @@ En este repo existe:
 - `tools/generate-remote-entry.mjs`
 
 Agrega en el Remote:
-- `mf:build`: `ng build --configuration=production`
+- `mf:build`: `ng run app:esbuild:production` (recomendado: evita colgarse en el build de Native Federation)
 - `mf:postbuild`: `node ../tools/generate-remote-entry.mjs --dist dist --name <REMOTE_ID> --out remoteEntry.json`
 
 Flujo:

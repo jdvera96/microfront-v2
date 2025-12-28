@@ -9,7 +9,7 @@
     "postinstall": "node ../tools/patch-native-federation.mjs",
     "mf:serve:ng": "ng serve --port 4202",
     "mf:serve": "node ./dev-proxy.mjs",
-    "mf:build": "ng build --configuration=production",
+    "mf:build": "ng run app:esbuild:production",
     "mf:postbuild": "node ../tools/generate-remote-entry.mjs --dist dist --name onboarding --out remoteEntry.json"
   },
   "dependencies": {

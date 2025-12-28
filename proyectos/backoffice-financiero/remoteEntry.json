@@ -4,7 +4,15 @@
   "exposes": [
     {
       "key": "./Bootstrap",
-      "outFileName": "chunk-PLACEHOLDER.js"
+      "outFileName": "chunk-PELU224A.js"
+    },
+    {
+      "key": "./Mount",
+      "outFileName": "chunk-PELU224A.js"
+    },
+    {
+      "key": "./Component",
+      "outFileName": "chunk-PELU224A.js"
     }
   ]
 }

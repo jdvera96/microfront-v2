@@ -4,10 +4,14 @@ module.exports = withNativeFederation({
   name: 'financiero',
 
   exposes: {
-    // Para el Shell (render dentro del DOM del host)
     './Bootstrap': './src/bootstrap.ts',
     './Mount': './src/mount.ts',
     './Component': './src/remote-entry.ts',
+  },
+
+  // ✅ agrega esto
+  features: {
+    ignoreUnusedDeps: true,
   },
 
   shared: {
@@ -16,5 +20,3 @@ module.exports = withNativeFederation({
 
   skip: ['rxjs/ajax', 'rxjs/fetch', 'rxjs/testing', 'rxjs/webSocket'],
 });
-
-
